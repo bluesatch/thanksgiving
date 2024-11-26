@@ -21,7 +21,7 @@ class MenuForm {
                 id: 1,
                 type: 'meat',
                 item: 'fried turkey',
-                imgUrl: 'fried_turkey.jpeg',
+                imgUrl: 'fried_turkey.jpg',
                 isChecked: false,
                 madeBy: 'Satch'
             },
@@ -29,7 +29,7 @@ class MenuForm {
                 id: 2,
                 type: 'meat',
                 item: 'oven turkey',
-                imgUrl: 'oven_turey.jpeg',
+                imgUrl: 'oven_turkey.jpg',
                 isChecked: false,
                 madeBy: 'Mom'
             },
@@ -198,31 +198,31 @@ class MenuForm {
             // for each object build Figure
             
             const column = document.createElement('div')
-            column.classList.add('col')
+            column.classList.add('col', 'figs')
 
             column.innerHTML = `
-                <div class="figure-div" data-isChecked=${obj.isChecked}>
+                <div class="figure-div h-100" data-isChecked=${obj.isChecked}>
                     <figure class="figure item-figure">
-                        <img src="https://via.placeholder.com/200x200" alt="placeholder img" class="img-fluid image figure-img food-image rounded" />
+                        <img src="images/${obj.imgUrl}" alt="${obj.item} made by ${obj.madeBy}" class="img-fluid image figure-img food-image w-100 rounded" />
                         <figcaption class="figure-caption food-caption">${
                             obj.hasOwnProperty('madeBy') ? obj.madeBy : ''
                         }</figcaption>
+                        <h3 class="food-heading">${obj.item}</h3>
+                        <div class="form-check figure-form">
+                            <input 
+                                type="checkbox" 
+                                name="${obj.type}" 
+                                id="${obj.type}-${obj.id}"
+                                value="${obj.item}"
+                                class="form-check-input"
+                            />
+                            <label 
+                                for="${obj.type}-${obj.id}" 
+                                class="text-capitalize form-check-label figure-label">
+                                ${obj.item}
+                            </label>
+                        </div>
                     </figure>
-                    <h3 class="food-heading">${obj.item}</h3>
-                    <div class="form-check">
-                        <input 
-                            type="checkbox" 
-                            name="${obj.type}" 
-                            id="${obj.type}-${obj.id}"
-                            value="${obj.item}"
-                            class="form-check-input"
-                        />
-                        <label 
-                            for="${obj.type}-${obj.id}" 
-                            class="text-capitalize form-check-label">
-                            ${obj.item}
-                        </label>
-                    </div>
                 </div>
             `
             switch (obj.type) {
@@ -247,7 +247,7 @@ class MenuForm {
     buildPlate() {
         const person =  document.getElementById('person').value
         const checkboxes = document.querySelectorAll('input[type=checkbox]')
-        const foodItems = document.querySelectorAll('.figure-div')
+        // const foodItems = document.querySelectorAll('.figure-div')
 
 
         checkboxes.forEach(checkbox => {
@@ -258,24 +258,39 @@ class MenuForm {
                 // console.log(checkbox.value)
                 // console.log(name, value)
                 this.plate = {
+                    // spread the old object
                     ...this.plate,
+                    // replace the old values with the ones
                     person,
+                    /**
+                     * 
+                     * This weird thing will take each 
+                     * key and then will spread the array and add each new value
+                     *
+                     */
                     [name]: [...this.plate[name],value]
                     
                 }
 
+                
                 this.menu.forEach(item => {
                     if (checkbox.value == item.item) {
                         item.isChecked = checkbox.checked
                     }
                     
                 })
+            } else {
+                this.menu.forEach(item => {
+                    if (checkbox.value == item.item) {
+                        item.isChecked = false
+                    }
+                })
             }
         })
         // console.log(this.plate)
         const personPlate = document.getElementById('personPlate')
         personPlate.innerText = `${this.plate.person}'s `
-
+        
         this.makeReceipt(this.menu)
     }
 
@@ -284,7 +299,7 @@ class MenuForm {
         for (let i = 0; i < arr.length; i++) {
             if (arr[i].isChecked) {
                 const listItem = document.createElement('li')
-                listItem.classList.add('list-group-item')
+                listItem.classList.add('list-group-item', 'li')
                 listItem.innerText = arr[i].item
     
                 this.foodList.appendChild(listItem)
@@ -307,6 +322,7 @@ submitBtn.addEventListener('click', (e)=> {
     e.preventDefault()
     // console.log('click')
     action.buildPlate()
+    submitBtn.setAttribute('disabled', true)
 })
 
 
